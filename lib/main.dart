@@ -119,7 +119,6 @@ class _WebViewExampleState extends State<WebViewExample> {
                                 'document.body.textContent');
 
                         text.then((value) {
-                          print(value);
                           emailAddresses =
                               extractEmailAddresses(value.toString());
                           print('Email Addresses: $emailAddresses');
