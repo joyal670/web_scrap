@@ -217,15 +217,40 @@ class _WebViewExampleState extends State<WebViewExample> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.black)),
-              child: WebViewWidget(
-                controller: controller,
-                gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                  Factory<VerticalDragGestureRecognizer>(
-                    () => VerticalDragGestureRecognizer(),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: WebViewWidget(
+                      controller: controller,
+                      gestureRecognizers: <Factory<
+                          OneSequenceGestureRecognizer>>{
+                        Factory<VerticalDragGestureRecognizer>(
+                          () => VerticalDragGestureRecognizer(),
+                        ),
+                        Factory<HorizontalDragGestureRecognizer>(
+                            () => HorizontalDragGestureRecognizer())
+                      },
+                    ),
                   ),
-                  Factory<HorizontalDragGestureRecognizer>(
-                      () => HorizontalDragGestureRecognizer())
-                },
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () async {
+                            if (await controller.canGoBack()) {
+                              controller.goBack();
+                            }
+                          },
+                          icon: Icon(Icons.arrow_back)),
+                      IconButton(
+                          onPressed: () async {
+                            if (await controller.canGoForward()) {
+                              controller.goForward();
+                            }
+                          },
+                          icon: Icon(Icons.arrow_forward)),
+                    ],
+                  )
+                ],
               )),
         ),
       ],
@@ -364,6 +389,12 @@ class _WebViewExampleState extends State<WebViewExample> {
       },
       onWebResourceError: (WebResourceError error) {
         print("error while loading $error");
+      },
+      onNavigationRequest: (NavigationRequest request) {
+        if (request.url.startsWith(urlString)) {
+          return NavigationDecision.prevent;
+        }
+        return NavigationDecision.navigate;
       },
     ));
   }
